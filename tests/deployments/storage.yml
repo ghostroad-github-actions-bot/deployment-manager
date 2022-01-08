@@ -1,0 +1,9 @@
+imports:
+- path: bucket/bucket.jinja
+  name: bucket.jinja
+
+resources:
+  - name: bucket
+    type: bucket.jinja
+    properties:
+      name: {{BUCKET_NAME}}
