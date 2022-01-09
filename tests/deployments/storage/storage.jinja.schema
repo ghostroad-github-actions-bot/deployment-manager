@@ -1,0 +1,27 @@
+info:
+    title: Project Storage Bucket
+    description: A bucket for the specified project.
+
+properties:
+    location:
+        type: string
+        default: "US-CENTRAL1"
+        description: The location of the bucket. Object data resides in physical storage within this region.
+
+    predefinedAcl:
+        type: string
+        default: "projectPrivate"
+        description: Apply a predefined set of access controls to this bucket.
+
+    predefinedDefaultObjectAcl:
+        type: string
+        default: "authenticatedRead"
+        description: Apply a predefined set of default object access controls to this bucket.
+
+outputs:
+    loggingUri:
+        type: string
+        description: The URI of logging bucket.
+    bucketUri:
+        type: string
+        description: The URI of this bucket.

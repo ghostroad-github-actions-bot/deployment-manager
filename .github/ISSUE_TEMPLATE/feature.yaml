@@ -1,0 +1,33 @@
+name: Feature
+description: Request a feature.
+title: "feature: <description>"
+labels:
+  - feature
+assignees:
+  - nicolas-mark
+  - richard-florian
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: Describe the functionality in one or two sentences.
+    validations:
+      required: true
+  - type: textarea
+    attributes: 
+      label: Design
+      description: How do you envision the action?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Markup
+      description: Paste the proposed GitHub Actions YAML, if relevant.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Additional Context
+      description: Please provide links to relevant documentation or examples.
+    validations:
+      required: false

@@ -1,0 +1,59 @@
+# Copyright 2022 Ghost Road Studio
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#    http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Manage Google Cloud resource deployments
+author: Ghost Road Studio
+description: |-
+  Use this action to manage Google Cloud resource deployments using Deployment Manager.
+inputs:
+  deployment:
+    description: |-
+      Name of the deployment.
+    required: true
+  template:
+    description: |-
+      Path to template detailing resources to create or update.
+    required: false
+  config:
+    description: |-
+      Configuration file path specifying deployment resources.
+    required: false
+  project_id:
+    description: |-
+      The GCP project id. Overrides project id set by credentials.
+    required: false
+  credentials:
+    description: |-
+      Service account key for authentication. Raw or base64-encoded private key. Required if not using setup-gcloud with exported credentials.
+    required: false
+  labels:
+    description: |-
+      Queryable annotations for resources. Provides a way to conditionally allow or deny policies based on tags.
+    required: false
+  gcloud_version:
+    default: latest
+    description: |-
+      Version of Cloud SDK to install. If unspecified or set to "latest", the latest gcloud version for the platform will be installed.
+    required: false
+  properties:
+    description: |-
+      Properties to be passed to template. Configs may not use properties.
+    required: false
+runs:
+  using: node16
+  main: dist/index.js
+branding:
+  icon: cloud-drizzle
+  color: gray-dark
+  

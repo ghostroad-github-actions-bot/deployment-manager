@@ -1,0 +1,123 @@
+name: deployment-manager integration
+on:
+  pull_request:
+    branches:
+    - main
+    - dev
+env:
+  DEPLOYMENTS_PATH: tests/deployments
+jobs:
+  template:
+    name: using template
+    if: ${{ github.event_name == 'push' || github.repository == github.event.pull_request.head.repo.full_name && github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+    - id: deployment
+      run: echo ::set-output name=deployment::template-$GITHUB_SHA
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+      with:
+        node-version: 16.x
+    - run: |-
+        npm clean-install
+        npm run-script build
+    
+    - uses: google-github-actions/auth@v0
+      with:
+        create_credentials_file: true
+        credentials_json: ${{ secrets.DEPLOYMENTS_SA_KEY_B64 }}
+    - uses: google-github-actions/setup-gcloud@v0
+
+    - name: create a deployment using template
+      id: deploy
+      uses: ./
+      with:
+        deployment: ${{ steps.deployment.outputs.deployment }}
+        template: ${{ env.DEPLOYMENTS_PATH }}/bucket/bucket.jinja
+        properties: name:${{ steps.deployment.outputs.deployment }}
+    
+    - name: Integration Tests
+      run: npm run-script e2e-tests
+      env:
+        DEPLOYMENT: ${{ steps.deployment.outputs.deployment }}
+    
+    - name: update deployment with labels and properties
+      id: update
+      uses: ./
+      with:
+        deployment: ${{ steps.deployment.outputs.deployment }}
+        template: ${{ env.DEPLOYMENTS_PATH }}/bucket/bucket.jinja
+        properties: name:${{ steps.deployment.outputs.deployment }}
+        labels: environment=test,team=devs
+      
+    - name: Integration Tests
+      run: npm run-script e2e-tests
+      env:
+        DEPLOYMENT: ${{ steps.deployment.outputs.deployment }}
+        LABELS: environment=test,team=devs
+        PROPERTIES: name:${{ steps.deployment.outputs.deployment }}
+
+  config:
+    name: using configuration
+    if: ${{ github.event_name == 'push' || github.repository == github.event.pull_request.head.repo.full_name && github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+    - id: deployment
+      run: echo ::set-output name=deployment::config-$GITHUB_SHA
+    - uses: actions/checkout@v2
+    - run: sed -i 's/{{BUCKET_NAME}}/${{ steps.deployment.outputs.deployment }}/g' tests/deployments/storage.yml
+    - uses: actions/setup-node@master
+      with:
+        node-version: 16.x
+    - run: |-
+        npm clean-install
+        npm run-script build
+
+    - uses: google-github-actions/auth@v0
+      with:
+        create_credentials_file: true
+        credentials_json: ${{ secrets.DEPLOYMENTS_SA_KEY_B64 }}
+    - uses: google-github-actions/setup-gcloud@v0
+
+    - name: create a deployment using configuration
+      id: deploy
+      uses: ./
+      with:
+        deployment: ${{ steps.deployment.outputs.deployment }}
+        config: ${{ env.DEPLOYMENTS_PATH }}/storage.yml
+    
+    - name: Integration Tests
+      run: npm run-script e2e-tests
+      env:
+        DEPLOYMENT: ${{ steps.deployment.outputs.deployment }}
+
+    - name: update deployment with labels
+      id: update
+      uses: ./
+      with:
+        deployment: ${{ steps.deployment.outputs.deployment }}
+        config: ${{ env.DEPLOYMENTS_PATH }}/storage.yml
+        labels: environment=test,team=devs
+    
+    - name: Integration Tests
+      run: npm run-script e2e-tests
+      env:
+        DEPLOYMENT: ${{ steps.deployment.outputs.deployment }}
+        LABELS: environment=test,team=devs
+
+  cleanup:
+    name: clean up
+    if: ${{ (github.event_name == 'push' || github.repository == github.event.pull_request.head.repo.full_name && github.actor != 'dependabot[bot]') && always() }}
+    runs-on: ubuntu-latest
+    needs: [ template, config ]
+    steps:
+    - uses: google-github-actions/auth@v0
+      with:
+        create_credentials_file: true
+        credentials_json: ${{ secrets.DEPLOYMENTS_SA_KEY_B64 }}
+
+    - uses: google-github-actions/setup-gcloud@v0
+    - name: delete deployments
+      run: |-
+        gcloud deployment-manager deployments delete template-$GITHUB_SHA --quiet
+        gcloud deployment-manager deployments delete config-$GITHUB_SHA --quiet

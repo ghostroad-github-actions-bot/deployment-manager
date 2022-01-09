@@ -1,0 +1,42 @@
+{% set LOGBUCKET = "log-bucket-" + env["deployment"] %}
+
+resources:
+- name: {{ LOGBUCKET }}
+  type: gcp-types/storage-v1:buckets
+  properties:
+    location: {{ properties["location"] }}
+- name: bucket-{{ env["deployment" ] }}
+  type: gcp-types/storage-v1:buckets
+  properties:
+    cors:
+      - maxAgeSeconds: 10
+        method:
+          - GET
+          - POST
+          - OPTIONS
+        origin:
+          - '*'
+        responseHeader:
+          - Content-Type
+          - Last-Modified
+          - Expires
+    lifecycle:
+      rule:
+        - action:
+            type: Delete
+          condition:
+            isLive: false
+            numNewerVersions: 3
+    location: {{ properties["location"] }}
+    logging:
+      logBucket: $(ref.{{ LOGBUCKET }}.name)
+      logObjectPrefix: log-{{ env["deployment" ] }}
+    predefinedAcl: {{ properties["predefinedAcl"] }}
+    predefinedDefaultObjectAcl: {{ properties["predefinedDefaultObjectAcl"] }}
+    versioning:
+      enabled: true
+outputs:
+- name: loggingUri
+  value: $(ref.{{ LOGBUCKET }}.selfLink)
+- name: bucketUri
+  value: $(ref.bucket-{{ env["deployment"] }}.selfLink)

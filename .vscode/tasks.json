@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "npm: test",
+            "type": "npm",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "script": "test",
+            "problemMatcher": [],
+            "detail": "mocha -r ts-node/register -t 150s 'tests/unit/*.test.ts' --exit"
+        },
+        {
+            "label": "mocha: current file",
+            "type": "shell",
+            "group": "test",
+            "args": [
+                "${relativeFile}",
+                "-r",
+                "ts-node/register",
+                "--timeout",
+                "120s"
+            ],
+            "command": "./node_modules/.bin/mocha"
+        }
+    ]
+}

@@ -1,0 +1,45 @@
+name: Bug Report
+description: Report a bug.
+title: "bug: <description>"
+labels:
+  - bug
+assignees:
+  - nicolas-mark
+  - richard-florian
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### TL;DR
+        Describe the bug in one or two sentences below.
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: What was expected to happen?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Observed Behavior
+      description: Detail the observed behavior.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        ### Reproduction
+        Include your complete GitHub Actions YAML.
+  - type: textarea
+    attributes:
+      label: Action YAML
+      description: Paste your complete GitHub Actions YAML here, remove any sensitive values.
+      render: yml
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional Context
+      description: Are you running custom workers? Anything atypical? Any additional context is helpful.
+    validations:
+      required: false
+      
