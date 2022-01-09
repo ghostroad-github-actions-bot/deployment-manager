@@ -1,0 +1,126 @@
+name: release-please
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    env:
+      ACTION_NAME: deployment-manager
+      ACTIONS_SIGNING_KEY: ${{ secrets.ACTIONS_SIGNING_KEY }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    
+    - name: Clean install & build
+      run: |-
+        git pull
+        npm clean-install
+        npm run-script build
+    
+    - name: Configure GPG Key
+      run: |
+        echo -n "$ACTIONS_SIGNING_KEY" | base64 --decode | gpg --import
+    
+    - name: Commit changes
+      run: |-
+        set -e
+        CURRENT_HASH=$(git rev-parse HEAD)
+        LAST_BUILD_HASH=$(git log --author=ghostroad-github-actions-bot -1 --pretty=format:"%H")
+        DIFF=""
+        # build & commit dist if diff
+        git config --global commit.gpgsign "true"
+        git config --global gpg.program "gpg"
+        git config --global user.name "actions-bot"
+        git config --global user.email "github-actions@ghostroad.studio"
+        git config --global user.signingkey "0xAB58237FC0757F9C"
+        git add --force dist/
+        git diff-index --quiet HEAD || git commit -m "chore: build dist ${ACTION_NAME}"
+        if [ -z "$LAST_BUILD_HASH" ]
+        then
+          echo "Unable to find last commit by bot, skipping diff gen"
+        else
+          DIFF=$(git log ${LAST_BUILD_HASH}...${CURRENT_HASH} --oneline)
+          echo $DIFF
+        fi
+        # set env vars
+        echo "CURRENT_HASH=${CURRENT_HASH}" >> $GITHUB_ENV
+        echo "LAST_BUILD_HASH=${LAST_BUILD_HASH}" >> $GITHUB_ENV
+        echo "DIFF<<EOF" >> $GITHUB_ENV
+        echo "${DIFF}" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+    
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ secrets.ACTIONS_BOT_TOKEN }}
+        add-paths: dist/
+        committer: "ghostroad-github-actions-bot <github-actions@ghostroad.studio>"
+        author: "ghostroad-github-actions-bot <github-actions@ghostroad.studio>"
+        signoff: "ghostroad-github-actions-bot <github-actions@ghostroad.studio>"
+        commit-message: Build dist
+        title: "chore: build dist"
+        body: |
+          Build dist PR
+          ${{ env.DIFF }}
+        base: main
+        branch: create-pull-request/build-dist
+        labels: automated pr
+        push-to-fork: ghostroad-github-actions-bot/${{ env.ACTION_NAME }}
+        delete-branch: true
+  
+  # Creates a release pull request if any conventional commits since last release.
+  release-please-pr:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Create release pull request
+      uses: google-github-actions/release-please-action@v2
+      with:
+        token: ${{ secrets.ACTIONS_BOT_TOKEN }}
+        release-type: node
+        bump-minor-pre-major: true
+        fork: true
+        command: release-pr
+  
+  # Does a release on the merge of the release pull request. Updates floating tags for major version.
+  release-please-release:
+    runs-on: ubuntu-latest
+    steps:
+    - id: release
+      uses: google-github-actions/release-please-action@v2
+      with:
+        release-type: node
+        bump-minor-pre-major: true
+        command: github-release
+    
+    - name: Update tags
+      if: ${{ steps.release.outputs.release_created }}
+      uses: actions/github-script@v5
+      with:
+        script: |-
+          const sha = '${{ steps.release.outputs.sha }}';
+          const sha = '${{ steps.release.outputs.major }}';
+
+          try {
+            await github.rest.git.updateRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `tags/${major}`,
+              sha: sha,
+              force: true,
+            });
+            core.info(`Updated ${major} to ${sha}`);
+          } catch (err) {
+            core.warning(`Failed to create ${major}: ${err}`);
+
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${major}`,
+              sha: sha,
+            });
+            core.info(`Created ${major} at ${sha}`);
+          }

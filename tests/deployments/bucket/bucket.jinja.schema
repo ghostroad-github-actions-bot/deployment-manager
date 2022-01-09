@@ -1,0 +1,18 @@
+info:
+    title: Project Storage Bucket
+    description: A bucket for the specified project.
+
+properties:
+    name:
+        type: string
+        description: The name of the bucket.
+
+    location:
+        type: string
+        default: "US-CENTRAL1"
+        description: The location of the bucket. Object data resides in physical storage within this region.
+
+outputs:
+    bucketUri:
+        type: string
+        description: The URI of this bucket.

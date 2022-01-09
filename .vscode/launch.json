@@ -1,0 +1,68 @@
+{
+    "configurations": [
+        // Mocha Tests (all)
+        {
+            "args": [
+                "-r",
+                "ts-node/register",
+                "--timeout",
+                "120s",
+                "--colors",
+                "${workspaceFolder}/tests/unit/*.test.ts"
+            ],
+            "env": {
+                "RUNNER_TOOL_CACHE": "."
+            },
+            "internalConsoleOptions": "openOnSessionStart",
+            "name": "Mocha Tests (all)",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
+        },
+        {
+            "args": [
+                "-r",
+                "ts-node/register",
+                "--colors",
+                "${relativeFile}"
+            ],
+            "env": {
+                "RUNNER_TOOL_CACHE": "."
+            },
+            "internalConsoleOptions": "openOnSessionStart",
+            "name": "Mocha Tests (current file)",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
+        },
+        // E2E Tests
+        {
+            "args": [
+                "-r",
+                "ts-node/register",
+                "--timeout",
+                "120s",
+                "--colors",
+                "${workspaceFolder}/tests/e2e.test.ts"
+            ],
+            "env": {
+                "DEPLOYMENT": "bucket",
+                "LABELS": "environment=test,team=devs"
+            },
+            "internalConsoleOptions": "openOnSessionStart",
+            "name": "E2E Tests",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
+        }
+    ]
+}

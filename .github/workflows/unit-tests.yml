@@ -1,0 +1,32 @@
+name: unit testing
+on:
+  push:
+    branches:
+    - main
+    - dev
+  pull_request:
+    branches:
+    - main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+jobs:
+  run:
+    name: lint & test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+      with:
+        node-version: 16.x
+    
+    - name: npm build
+      run: |-
+        npm clean-install
+        npm run-script build
+    
+    - name: npm lint
+      run: npm run-script lint
+
+    - name: npm test
+      run: npm run-script test

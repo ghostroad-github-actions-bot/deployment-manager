@@ -1,0 +1,20 @@
+name: Question
+description: Ask us a question.
+title: "question: <description>"
+labels:
+  - question
+assignees:
+  - nicolas-mark
+  - richard-florian
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Asking the right questions is as important as answering them.
+        > - Beniot Mandelbrot
+  - type: textarea
+    attributes:
+      label: Question
+      description: Ask your question in one or two sentences below. If sharing code, please use codeblocks.
+    validations:
+      required: true

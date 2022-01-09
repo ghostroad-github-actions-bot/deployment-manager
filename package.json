@@ -1,0 +1,83 @@
+{
+  "name": "deployment-manager",
+  "version": "0.1.0",
+  "description": "Manage Google Cloud resources using deployment manager.",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts",
+    "format": "prettier --write **/*.ts",
+    "lint": "eslint src/ --ext .ts,.tsx",
+    "test": "mocha -r ts-node/register -t 120s 'tests/unit/*.test.ts'",
+    "e2e-tests": "mocha -r ts-node/register -t 120s 'tests/e2e.test.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ghost-road-studio/deployment-manager.git"
+  },
+  "keywords": [
+    "actions",
+    "google",
+    "gcloud",
+    "deployment-manager",
+    "deployments"
+  ],
+  "author": "Ghost Road Studio",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ghost-road-studio/deployment-manager/issues"
+  },
+  "homepage": "https://github.com/ghost-road-studio/deployment-manager#readme",
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "@actions/exec": "^1.1.0",
+    "@actions/tool-cache": "^1.7.1",
+    "@google-github-actions/setup-cloud-sdk": "^0.3.1",
+    "@lifeomic/attempt": "^3.0.1",
+    "@types/tmp": "^0.2.3",
+    "fs": "^0.0.1-security",
+    "google-auth-library": "^7.10.4",
+    "googleapis": "^92.0.0",
+    "tmp": "^0.2.1",
+    "typed-rest-client": "^1.8.6",
+    "yaml": "^1.10.2"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.0",
+    "@types/js-yaml": "^4.0.5",
+    "@types/lodash": "^4.14.178",
+    "@types/mocha": "^9.0.0",
+    "@types/sinon": "^10.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@types/uuid": "^8.3.3",
+    "@vercel/ncc": "^0.33.1",
+    "@typescript-eslint/parser": "^5.9.0",
+    "chai": "^4.3.4",
+    "eslint": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "lodash": "^4.17.21",
+    "mocha": "^9.1.3",
+    "prettier": "^2.5.1",
+    "sinon": "^12.0.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.4.4"
+  },
+  "eslintConfig": {
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:prettier/recommended"
+    ],
+    "rules": {
+      "@typescript-eslint/camelcase": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-explicit-any": "off"
+    }
+  }
+}
