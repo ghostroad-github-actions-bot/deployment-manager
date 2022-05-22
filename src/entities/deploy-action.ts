@@ -94,10 +94,10 @@ export class DeployAction extends BaseAction {
           this.cmd.push('--properties', this.properties);
         }
 
-        if (this.labels) {
-          const flag = isUpdate ? '--update-labels' : '--labels';
-          this.cmd.push(flag, this.labels);
-        }
+        // if (this.labels) {
+        //   const flag = isUpdate ? '--update-labels' : '--labels';
+        //   this.cmd.push(flag, this.labels);
+        // }
       },
     );
     // #endregion
