@@ -1,6 +1,6 @@
 {
   "name": "deployment-manager",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage Google Cloud resources using deployment manager.",
   "main": "index.js",
   "scripts": {

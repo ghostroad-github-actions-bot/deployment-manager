@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.1](https://www.github.com/ghost-road-studio/deployment-manager/compare/v0.1.0...v0.1.1) (2022-05-23)
+
+
+### Bug Fixes
+
+* label update removed ([0c1eb89](https://www.github.com/ghost-road-studio/deployment-manager/commit/0c1eb89eabe371df18896553bbe2a9b4362a640b))
+
 ## 0.1.0 (2022-01-09)
 
 
